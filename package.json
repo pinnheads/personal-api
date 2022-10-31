@@ -1,0 +1,16 @@
+{
+  "name": "personal-api",
+  "version": "1.0.0",
+  "description": "A personal data api for my portfolio website",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "API"
+  ],
+  "author": "Utsav",
+  "license": "ISC"
+}
