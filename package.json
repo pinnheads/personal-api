@@ -12,5 +12,10 @@
     "API"
   ],
   "author": "Utsav",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/server": "^4.0.5",
+    "graphql": "^16.6.0",
+    "mongoose": "^6.7.0"
+  }
 }
