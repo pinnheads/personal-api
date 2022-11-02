@@ -1,6 +1,6 @@
 import Url from '../models/url.js';
 
-const UrlResolver = {
+const urlResolver = {
   Query: {
     async Url(parent, args) {
       await Url.findById(args.id);
@@ -18,4 +18,4 @@ const UrlResolver = {
   },
 };
 
-export default UrlResolver;
+export default urlResolver;

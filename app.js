@@ -1,14 +1,21 @@
+/* eslint-disable import/first */
 import _ from 'lodash';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import UrlResolver from './resolvers/url.js';
+import userResolver from './resolvers/user.js';
+import urlResolver from './resolvers/url.js';
 import basicsResolver from './resolvers/basics.js';
 import urlType from './typedefs/url.js';
+import userType from './typedefs/user.js';
 import basicsType from './typedefs/basics.js';
 // eslint-disable-next-line no-unused-vars
 import db from './db/connect.js';
@@ -24,8 +31,8 @@ async function startApolloServer() {
   // Same ApolloServer initialization as before, plus the drain plugin
   // for our httpServer.
   const server = new ApolloServer({
-    typeDefs: [basicsType, urlType],
-    resolvers: _.merge({}, basicsResolver, UrlResolver),
+    typeDefs: [basicsType, urlType, userType],
+    resolvers: _.merge({}, basicsResolver, urlResolver, userResolver),
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });
   // Ensure we wait for our server to start

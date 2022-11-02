@@ -15,15 +15,16 @@ const basicsType = `#graphql
     }
 
     type Mutation {
-        addBasics(  name: String,
-                    currentRole: String,
-                    email: String,
-                    phone: String,
-                    label: String,
-                    link: String,
-                    summary: String,
-                    location: String
-                ): Basics
+        addBasics(  
+            name: String,
+            currentRole: String,
+            email: String,
+            phone: String,
+            label: String,
+            link: String,
+            summary: String,
+            location: String
+        ): Basics
     }
 `;
 
