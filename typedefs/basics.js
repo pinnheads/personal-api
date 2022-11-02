@@ -5,7 +5,7 @@ const basicsType = `#graphql
         currentRole: String
         email: String!
         phone: String!
-        website: String
+        website: Url
         summary: String!
         location: String!
     }
@@ -19,7 +19,8 @@ const basicsType = `#graphql
                     currentRole: String,
                     email: String,
                     phone: String,
-                    website: String,
+                    label: String,
+                    link: String,
                     summary: String,
                     location: String
                 ): Basics
