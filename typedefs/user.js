@@ -1,10 +1,18 @@
 const userType = `#graphql
+    directive @auth(requires: Role = ADMIN) on OBJECT | FIELD_DEFINITION
 
-    type User {
-        username: String
-        email: String
-        password: String
+    enum Role {
+        ADMIN
+        USER
+    }
+
+    type User @auth(requires: USER) {
+        username: String!
+        email: String!
+        password: String!
         token: String
+        role: String @auth(requires: ADMIN)
+        basics: Basics
     }
 
     input RegisterInput {

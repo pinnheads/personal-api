@@ -1,13 +1,13 @@
 const basicsType = `#graphql
     type Basics {
         id: ID!
-        name: String!
+        firstName: String!
+        lastName: String!
         currentRole: String
-        email: String!
         phone: String!
-        website: Url
         summary: String!
         location: String!
+        socials: Url
     }
 
     type Query {

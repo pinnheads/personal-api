@@ -18,9 +18,8 @@ const basicsResolver = {
       const newUser = new Basics({
         name: args.name,
         currentRole: args.currentRole,
-        email: args.email,
         phone: args.phone,
-        website: newUrlObj,
+        socials: newUrlObj,
         summary: args.summary,
         location: args.location,
       });
