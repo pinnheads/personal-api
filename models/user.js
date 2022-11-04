@@ -6,6 +6,7 @@ const userSchema = new Schema({
   email: { type: String, unique: true },
   password: String,
   token: String,
+  isAdmin: { type: Boolean, default: false },
 });
 
 userSchema.path('email').validate((email) => {

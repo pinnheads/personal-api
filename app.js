@@ -11,12 +11,14 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import { GraphQLError } from 'graphql';
 import userResolver from './resolvers/user.js';
 import urlResolver from './resolvers/url.js';
 import basicsResolver from './resolvers/basics.js';
 import urlType from './typedefs/url.js';
 import userType from './typedefs/user.js';
 import basicsType from './typedefs/basics.js';
+import getUser from './middleware/user.js';
 // eslint-disable-next-line no-unused-vars
 import db from './db/connect.js';
 
@@ -47,7 +49,24 @@ async function startApolloServer() {
     // expressMiddleware accepts the same arguments:
     // an Apollo Server instance and optional configuration options
     expressMiddleware(server, {
-      context: async ({ req }) => ({ token: req.headers.token }),
+      context: async ({ req, res }) => {
+        // Get the user token from the headers.
+        const token = req.headers.authorization || '';
+
+        // Try to retrieve a user with the token
+        const user = await getUser(token);
+        if (!user) {
+          throw new GraphQLError('User is not authenticated', {
+            extensions: {
+              code: 'UNAUTHENTICATED',
+              http: { status: 401 },
+            },
+          });
+        }
+
+        // Add the user to the context
+        return { user };
+      },
     }),
   );
 

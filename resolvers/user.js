@@ -7,7 +7,7 @@ const userResolver = {
   Query: {
     async user(parent, args) {
       const result = await User.findById(args.id);
-      return User.populate(result, { path: 'website' });
+      return result;
     },
   },
   Mutation: {
