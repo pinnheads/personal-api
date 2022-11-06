@@ -11,13 +11,12 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { GraphQLError } from 'graphql';
+import urlType from './typedefs/url.js';
+import basicsType from './typedefs/basics.js';
+import userType from './typedefs/user.js';
 import userResolver from './resolvers/user.js';
 import urlResolver from './resolvers/url.js';
 import basicsResolver from './resolvers/basics.js';
-import urlType from './typedefs/url.js';
-import userType from './typedefs/user.js';
-import basicsType from './typedefs/basics.js';
 import getUser from './middleware/user.js';
 // eslint-disable-next-line no-unused-vars
 import db from './db/connect.js';
@@ -55,14 +54,6 @@ async function startApolloServer() {
 
         // Try to retrieve a user with the token
         const user = await getUser(token);
-        if (!user) {
-          throw new GraphQLError('User is not authenticated', {
-            extensions: {
-              code: 'UNAUTHENTICATED',
-              http: { status: 401 },
-            },
-          });
-        }
 
         // Add the user to the context
         return { user };

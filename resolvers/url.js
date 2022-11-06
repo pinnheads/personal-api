@@ -1,4 +1,6 @@
 import Url from '../models/url.js';
+import User from '../models/user.js';
+import Basics from '../models/basics.js';
 
 const urlResolver = {
   Query: {
@@ -7,7 +9,7 @@ const urlResolver = {
     },
   },
   Mutation: {
-    async addUrl(parent, args) {
+    async addUrl(parent, args, context) {
       const newLink = new Url({
         label: args.label,
         link: args.link,

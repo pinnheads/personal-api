@@ -1,13 +1,15 @@
+/* eslint-disable no-unused-vars */
 import { GraphQLError } from 'graphql';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import Basics from '../models/basics.js';
 import User from '../models/user.js';
 
 const userResolver = {
   Query: {
-    async user(parent, args) {
-      const result = await User.findById(args.id);
-      return result;
+    async user(parent, args, context) {
+      const result = await User.findById(context.user.id);
+      return User.populate(result, { path: 'basics', populate: { path: 'socials' } });
     },
   },
   Mutation: {

@@ -1,24 +1,18 @@
 const userType = `#graphql
-    directive @auth(requires: Role = ADMIN) on OBJECT | FIELD_DEFINITION
 
-    enum Role {
-        ADMIN
-        USER
-    }
-
-    type User @auth(requires: USER) {
+    type User {
         username: String!
         email: String!
         password: String!
         token: String
-        role: String @auth(requires: ADMIN)
+        role: [String]!
         basics: Basics
     }
 
     input RegisterInput {
-        username: String,
-        email: String,
-        password: String,        
+        email: String
+        username: String
+        password: String        
     }
 
     input LoginInput {
@@ -27,12 +21,12 @@ const userType = `#graphql
     }
 
     type Mutation {
-        registerUser(registerInput: RegisterInput): User!
         loginUser(loginInput: LoginInput): String!
+        registerUser(registerInput: RegisterInput): User!
     }
 
     type Query {
-        user(id: ID!): User!
+        user: User!
     }
 `;
 

@@ -7,7 +7,7 @@ const basicsType = `#graphql
         phone: String!
         summary: String!
         location: String!
-        socials: Url
+        socials: [Url]
     }
 
     type Query {
@@ -16,12 +16,10 @@ const basicsType = `#graphql
 
     type Mutation {
         addBasics(  
-            name: String,
+            firstName: String,
+            lastName: String,
             currentRole: String,
-            email: String,
             phone: String,
-            label: String,
-            link: String,
             summary: String,
             location: String
         ): Basics

@@ -1,6 +1,7 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable new-cap */
 import mongoose, { Schema } from 'mongoose';
-import Basics from './basics';
+import Basics from './basics.js';
 
 const userSchema = new Schema({
   username: { type: String, default: null },
@@ -14,7 +15,7 @@ const userSchema = new Schema({
     }],
     default: ['USER'],
   },
-  basics: { type: mongoose.ObjectId, ref: 'Basics' },
+  basics: { type: mongoose.ObjectId, ref: 'Basic', default: null },
 });
 
 userSchema.path('email').validate((email) => {

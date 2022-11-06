@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable new-cap */
 import mongoose, { Schema } from 'mongoose';
 import Url from './url.js';
@@ -9,10 +10,11 @@ const basicsSchema = new Schema({
   phone: String,
   summary: String,
   location: String,
-  socials: {
+  socials: [{
     type: mongoose.ObjectId,
     ref: 'Url',
-  },
+    default: null,
+  }],
 });
 
 basicsSchema.path('phone').validate((phone) => {
