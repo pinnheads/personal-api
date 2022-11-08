@@ -4,12 +4,14 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Basics from '../models/basics.js';
 import User from '../models/user.js';
+import { isUserAdmin, isAuthenticated } from '../middleware/user.js';
 
 const userResolver = {
   Query: {
     async user(parent, args, context) {
       const result = await User.findById(context.user.id);
-      return User.populate(result, { path: 'basics', populate: { path: 'socials' } });
+      return result;
+      // return User.populate(result, { path: 'basics', populate: { path: 'socials' } });
     },
   },
   Mutation: {
@@ -27,6 +29,14 @@ const userResolver = {
             },
           },
         );
+      }
+      // Check if username and password is given by the user
+      if (!registerInput.username || !registerInput.password) {
+        throw new GraphQLError('Please provide a valid input', {
+          extensions: {
+            code: 'INVALID_INPUT',
+          },
+        });
       }
       // If user not present then rake user password and encrypt the password
       const encryptedPassword = await bcrypt.hash(registerInput.password, 10);
@@ -50,12 +60,20 @@ const userResolver = {
     },
     // Login user resolver
     async loginUser(parent, { loginInput }) {
+      // Check if email and password are provided by the user
+      if (!loginInput.email || !loginInput.password) {
+        throw new GraphQLError('Please provide a valid input', {
+          extensions: {
+            code: 'INVALID_INPUT',
+          },
+        });
+      }
       // Check if a user is present
       const user = await User.findOne({ email: loginInput.email });
 
       // Check if the password provided is correct
       if (user && await (bcrypt.compare(loginInput.password, user.password))) {
-        return user.token;
+        return user;
       }
       // otherwise throw error
       throw new GraphQLError(
@@ -66,6 +84,29 @@ const userResolver = {
           },
         },
       );
+    },
+    // Make a user admin
+    async makeAdmin(parent, args, context) {
+      if (await isAuthenticated(context.user.id) && await isUserAdmin(context.user.id)) {
+        const user = await User.findById(args.id);
+        if (!user) {
+          throw new GraphQLError(`No user with id ${args.id} found`, {
+            extensions: {
+              code: 'INVALID_CREDENTIALS',
+              http: { status: 404 },
+            },
+          });
+        }
+        user.isAdmin = true;
+        await user.save();
+        return true;
+      }
+      throw new GraphQLError('You\'re not permitted to do this!', {
+        extensions: {
+          code: 'FORBIDDEN',
+          http: { status: 403 },
+        },
+      });
     },
   },
 };

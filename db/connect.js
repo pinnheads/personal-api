@@ -1,11 +1,24 @@
+/* eslint-disable no-console */
 import mongoose from 'mongoose';
 
-mongoose.connect('mongodb://localhost:27017/test', { useNewUrlParser: true });
-const db = mongoose.connection;
+const connectDB = async (mongodbURI, dbName) => {
+  if (!mongodbURI || !dbName) {
+    throw new Error('MongoDb URI or DB name is not defined');
+  }
+  try {
+    await mongoose.connect(mongodbURI, { dbName, useNewUrlParser: true }, (error) => {
+      if (error) {
+        console.log(error);
+      }
+    });
+    console.log('🐣 mongodb database started');
+    console.log('🙉 dbURL ', mongodbURI);
+    console.log('🙉 dbName ', dbName);
+    return await mongoose.connection;
+  } catch (error) {
+    console.log(error);
+    return undefined;
+  }
+};
 
-db.on('error', console.error.bind(console, "❌ Couldn't connect to database"));
-db.once('open', () => {
-  console.log('✅ Connected to database');
-});
-
-export default db;
+export default connectDB;

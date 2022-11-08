@@ -8,14 +8,8 @@ const userSchema = new Schema({
   email: { type: String, unique: true },
   password: String,
   token: String,
-  role: {
-    type: [{
-      type: String,
-      enum: ['USER', 'ADMIN'],
-    }],
-    default: ['USER'],
-  },
-  basics: { type: mongoose.ObjectId, ref: 'Basic', default: null },
+  isAdmin: { type: Boolean, default: false },
+  // basics: { type: mongoose.ObjectId, ref: 'Basic', default: null },
 });
 
 userSchema.path('email').validate((email) => {

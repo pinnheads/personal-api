@@ -1,12 +1,12 @@
 const userType = `#graphql
 
     type User {
+        id: ID!
         username: String!
         email: String!
         password: String!
         token: String
-        role: [String]!
-        basics: Basics
+        isAdmin: Boolean!
     }
 
     input RegisterInput {
@@ -21,12 +21,13 @@ const userType = `#graphql
     }
 
     type Mutation {
-        loginUser(loginInput: LoginInput): String!
+        loginUser(loginInput: LoginInput): User
         registerUser(registerInput: RegisterInput): User!
+        makeAdmin(id: ID!): Boolean!
     }
 
     type Query {
-        user: User!
+        user: User
     }
 `;
 

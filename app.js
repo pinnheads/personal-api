@@ -17,11 +17,15 @@ import userType from './typedefs/user.js';
 import userResolver from './resolvers/user.js';
 import urlResolver from './resolvers/url.js';
 import basicsResolver from './resolvers/basics.js';
-import getUser from './middleware/user.js';
+import { getUser } from './middleware/user.js';
 // eslint-disable-next-line no-unused-vars
-import db from './db/connect.js';
+import connectDB from './db/connect.js';
 
 async function startApolloServer() {
+  const mongodbURI = process.env.MONGODB_URI;
+  const dbName = process.env.MONGODB_NAME;
+
+  await connectDB(mongodbURI, dbName);
   // Required logic for integrating with Express
   const app = express();
   // Our httpServer handles incoming requests to our Express app.
@@ -67,4 +71,6 @@ async function startApolloServer() {
   console.log('🚀 Server ready at http://localhost:4000/');
 }
 
-startApolloServer();
+const server = startApolloServer();
+
+export default server;

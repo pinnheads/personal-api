@@ -1,4 +1,5 @@
 data.*
 data/
+coverage/
 node_modules/
 .env
