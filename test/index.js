@@ -1,5 +1,5 @@
 /* eslint-disable import/first */
-import _ from 'lodash';
+import _, { sumBy } from 'lodash';
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import * as dotenv from 'dotenv';
@@ -20,7 +20,6 @@ async function setupServer() {
   const mongodbURI = process.env.MONGODB_URI;
   const dbName = 'test';
   const db = await connectDB(mongodbURI, dbName);
-
   // Same ApolloServer initialization as before, plus the drain plugin
   // for our httpServer.
   const server = new ApolloServer({
