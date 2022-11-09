@@ -108,6 +108,7 @@ const userResolver = {
         },
       });
     },
+    // Delete a user (only admin can perform this action)
     async deleteUser(_, args, context) {
       if (await isAuthenticated(context.user.id) && await isUserAdmin(context.user.id)) {
         const user = await User.findById(args.id);
@@ -120,7 +121,6 @@ const userResolver = {
           });
         }
         const result = await User.findByIdAndDelete(user.id);
-        console.log(result);
         return true;
       }
       throw new GraphQLError('You\'re not permitted to do this!', {
