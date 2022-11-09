@@ -130,6 +130,30 @@ const userResolver = {
         },
       });
     },
+    // Update a password for the user
+    async updatePassword(_, { updatePasswordInput }, context) {
+      // Check if user is authenticated from the context
+      if (await isAuthenticated(context.user.id)) {
+        // Check if user exists in the db from the provided email
+        const oldUser = await User.findOne({ email: updatePasswordInput.email });
+        // Check if the provided old password is correct
+        if (oldUser && await (bcrypt.compare(updatePasswordInput.oldPassword, oldUser.password))) {
+          // Change the password if correct password is provide else throw error
+          oldUser.password = await bcrypt.hash(updatePasswordInput.newPassword, 10);
+          await oldUser.save();
+          return true;
+        }
+
+        throw new GraphQLError(
+          'Incorrect password or email! Please check and try again.',
+          {
+            extensions: {
+              code: 'INVALID_CREDENTIALS',
+            },
+          },
+        );
+      }
+    },
   },
 };
 
