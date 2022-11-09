@@ -5,6 +5,7 @@ const getUser = async (token) => {
   return user;
 };
 
+// TODO: Check authentication from context instead of the user id and throw proper error
 const isAuthenticated = async (id) => {
   const user = await User.findById(id);
   if (!user) {

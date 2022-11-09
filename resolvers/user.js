@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-unused-vars */
 import { GraphQLError } from 'graphql';
 import bcrypt from 'bcrypt';

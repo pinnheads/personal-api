@@ -179,7 +179,7 @@ describe('Users', () => {
     });
     // Get the new user
     const user = await User.findById(response.body.singleResult.data.registerUser.id);
-    const makeAdminRes = await apolloTestServer.server.executeOperation({
+    const getUser = await apolloTestServer.server.executeOperation({
       query: 'query Query { user { email id isAdmin password token username } }',
     }, {
       // Add admin user to context
@@ -187,7 +187,7 @@ describe('Users', () => {
         user,
       },
     });
-    expect(makeAdminRes.body.singleResult.errors).toBeUndefined();
+    expect(getUser.body.singleResult.errors).toBeUndefined();
   });
 
   test('[User]: Delete User - Happy Path', async () => {
@@ -205,7 +205,7 @@ describe('Users', () => {
     });
     const nonAdminUserId = nonAdminUser.body.singleResult.data.registerUser.id;
     // Send the mutation query with new user id to set as admin
-    const makeAdminRes = await apolloTestServer.server.executeOperation({
+    const deleteUserRes = await apolloTestServer.server.executeOperation({
       query: `mutation Mutation { deleteUser(id: "${nonAdminUserId}") }`,
     }, {
       // Add admin user to context
@@ -213,8 +213,8 @@ describe('Users', () => {
         user,
       },
     });
-    expect(makeAdminRes.body.singleResult.data.deleteUser).toBeTruthy();
-    expect(makeAdminRes.body.singleResult.errors).toBeUndefined();
+    expect(deleteUserRes.body.singleResult.data.deleteUser).toBeTruthy();
+    expect(deleteUserRes.body.singleResult.errors).toBeUndefined();
   });
 
   test('[User]: Delete User - When a non admin tries to delete an user', async () => {
@@ -230,7 +230,7 @@ describe('Users', () => {
     });
     const nonAdminUserId = nonAdminUser.body.singleResult.data.registerUser.id;
     // Send the mutation query with new user id to set as admin
-    const makeAdminRes = await apolloTestServer.server.executeOperation({
+    const deleteUserRes = await apolloTestServer.server.executeOperation({
       query: `mutation Mutation { deleteUser(id: "${nonAdminUserId}") }`,
     }, {
       // Add admin user to context
@@ -238,7 +238,7 @@ describe('Users', () => {
         user,
       },
     });
-    expect(makeAdminRes.body.singleResult.errors).toBeDefined();
+    expect(deleteUserRes.body.singleResult.errors).toBeDefined();
   });
 
   test('[User]: Delete User - User doesn\'t exists', async () => {
@@ -250,7 +250,7 @@ describe('Users', () => {
     const user = await User.findById(response.body.singleResult.data.registerUser.id);
     user.isAdmin = true;
     await user.save();
-    const makeAdminRes = await apolloTestServer.server.executeOperation({
+    const deleteUserRes = await apolloTestServer.server.executeOperation({
       query: 'mutation Mutation { deleteUser(id: "6369d4a27ee22a100416c7b3") }',
     }, {
       // Add admin user to context
@@ -258,6 +258,60 @@ describe('Users', () => {
         user,
       },
     });
-    expect(makeAdminRes.body.singleResult.errors).toBeDefined();
+    expect(deleteUserRes.body.singleResult.errors).toBeDefined();
+  });
+
+  test('[User]: Update Password - Happy Path', async () => {
+    // Create a new user
+    const response = await apolloTestServer.server.executeOperation({
+      query: 'mutation Mutation { registerUser(registerInput: { email: "updateuser011@gmail.com"  username: "pinnheads" password: "test123123" }) { id username email password token isAdmin } }',
+    });
+    // Get the new user
+    const user = await User.findById(response.body.singleResult.data.registerUser.id);
+    const updatePasswordRes = await apolloTestServer.server.executeOperation({
+      query: 'mutation Mutation { updatePassword( updatePasswordInput: { email: "updateuser011@gmail.com" newPassword: "test123123123" oldPassword: "test123123" } ) }',
+    }, {
+      // Add admin user to context
+      contextValue: {
+        user,
+      },
+    });
+    expect(updatePasswordRes.body.singleResult.errors).toBeUndefined();
+  });
+
+  test('[User]: Update Password - Invalid Email', async () => {
+    // Create a new user
+    const response = await apolloTestServer.server.executeOperation({
+      query: 'mutation Mutation { registerUser(registerInput: { email: "updateuser012@gmail.com"  username: "pinnheads" password: "test123123" }) { id username email password token isAdmin } }',
+    });
+    // Get the new user
+    const user = await User.findById(response.body.singleResult.data.registerUser.id);
+    const updatePasswordRes = await apolloTestServer.server.executeOperation({
+      query: 'mutation Mutation { updatePassword( updatePasswordInput: { email: "updateuser01@gmail.com" newPassword: "test123123123" oldPassword: "test123123" } ) }',
+    }, {
+      // Add admin user to context
+      contextValue: {
+        user,
+      },
+    });
+    expect(updatePasswordRes.body.singleResult.errors).toBeDefined();
+  });
+
+  test('[User]: Update Password - Invalid old password', async () => {
+    // Create a new user
+    const response = await apolloTestServer.server.executeOperation({
+      query: 'mutation Mutation { registerUser(registerInput: { email: "updateuser013@gmail.com"  username: "pinnheads" password: "test123123" }) { id username email password token isAdmin } }',
+    });
+    // Get the new user
+    const user = await User.findById(response.body.singleResult.data.registerUser.id);
+    const updatePasswordRes = await apolloTestServer.server.executeOperation({
+      query: 'mutation Mutation { updatePassword( updatePasswordInput: { email: "updateuser013@gmail.com" newPassword: "test123123123" oldPassword: "test12312" } ) }',
+    }, {
+      // Add admin user to context
+      contextValue: {
+        user,
+      },
+    });
+    expect(updatePasswordRes.body.singleResult.errors).toBeDefined();
   });
 });
