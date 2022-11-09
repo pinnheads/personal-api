@@ -23,6 +23,7 @@ const userType = `#graphql
     type Mutation {
         loginUser(loginInput: LoginInput): User
         registerUser(registerInput: RegisterInput): User!
+        deleteUser(id: ID!): Boolean!
         makeAdmin(id: ID!): Boolean!
     }
 

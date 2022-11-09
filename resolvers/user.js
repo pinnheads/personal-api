@@ -8,7 +8,7 @@ import { isUserAdmin, isAuthenticated } from '../middleware/user.js';
 
 const userResolver = {
   Query: {
-    async user(parent, args, context) {
+    async user(_, args, context) {
       const result = await User.findById(context.user.id);
       return result;
       // return User.populate(result, { path: 'basics', populate: { path: 'socials' } });
@@ -16,7 +16,7 @@ const userResolver = {
   },
   Mutation: {
     // Register user
-    async registerUser(parent, { registerInput }) {
+    async registerUser(_, { registerInput }) {
       // Check if a user already exists
       const oldUser = await User.findOne({ email: registerInput.email });
       // Throw error if user present
@@ -59,7 +59,7 @@ const userResolver = {
       return result;
     },
     // Login user resolver
-    async loginUser(parent, { loginInput }) {
+    async loginUser(_, { loginInput }) {
       // Check if email and password are provided by the user
       if (!loginInput.email || !loginInput.password) {
         throw new GraphQLError('Please provide a valid input', {
@@ -86,7 +86,7 @@ const userResolver = {
       );
     },
     // Make a user admin
-    async makeAdmin(parent, args, context) {
+    async makeAdmin(_, args, context) {
       if (await isAuthenticated(context.user.id) && await isUserAdmin(context.user.id)) {
         const user = await User.findById(args.id);
         if (!user) {
@@ -99,6 +99,28 @@ const userResolver = {
         }
         user.isAdmin = true;
         await user.save();
+        return true;
+      }
+      throw new GraphQLError('You\'re not permitted to do this!', {
+        extensions: {
+          code: 'FORBIDDEN',
+          http: { status: 403 },
+        },
+      });
+    },
+    async deleteUser(_, args, context) {
+      if (await isAuthenticated(context.user.id) && await isUserAdmin(context.user.id)) {
+        const user = await User.findById(args.id);
+        if (!user) {
+          throw new GraphQLError(`No user with id ${args.id} found`, {
+            extensions: {
+              code: 'INVALID_CREDENTIALS',
+              http: { status: 404 },
+            },
+          });
+        }
+        const result = await User.findByIdAndDelete(user.id);
+        console.log(result);
         return true;
       }
       throw new GraphQLError('You\'re not permitted to do this!', {
