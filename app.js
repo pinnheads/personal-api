@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable import/first */
 import _ from 'lodash';
 import { ApolloServer } from '@apollo/server';

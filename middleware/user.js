@@ -1,3 +1,4 @@
+import { GraphQLError } from 'graphql';
 import User from '../models/user.js';
 
 const getUser = async (token) => {
@@ -5,23 +6,30 @@ const getUser = async (token) => {
   return user;
 };
 
-// TODO: Check authentication from context instead of the user id and throw proper error
-const isAuthenticated = async (id) => {
-  const user = await User.findById(id);
-  if (!user) {
-    return false;
+const isAuthenticated = async (context) => {
+  if (context.user) {
+    const user = await User.findById(context.user.id);
+    if (user) return true;
+  } else {
+    throw new GraphQLError('Please Sign In or provide auth token', {
+      extensions: {
+        code: 'FORBIDDEN',
+        http: { status: 403 },
+      },
+    });
   }
-  return true;
+  return false;
 };
 
-const isUserAdmin = async (id) => {
-  if (isAuthenticated(id)) {
-    const user = await User.findById(id);
+const isUserAdmin = async (context) => {
+  if (isAuthenticated(context)) {
+    const user = await User.findById(context.user.id);
     if (user.isAdmin) {
       return true;
     }
     return false;
   }
+  return false;
 };
 
 export { getUser, isAuthenticated, isUserAdmin };

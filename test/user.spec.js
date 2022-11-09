@@ -314,4 +314,14 @@ describe('Users', () => {
     });
     expect(updatePasswordRes.body.singleResult.errors).toBeDefined();
   });
+
+  test('[User]: Update Password - User not signed in', async () => {
+    await apolloTestServer.server.executeOperation({
+      query: 'mutation Mutation { registerUser(registerInput: { email: "updateuser014@gmail.com"  username: "pinnheads" password: "test123123" }) { id username email password token isAdmin } }',
+    });
+    const updatePasswordRes = await apolloTestServer.server.executeOperation({
+      query: 'mutation Mutation { updatePassword( updatePasswordInput: { email: "updateuser014@gmail.com" newPassword: "test123123123" oldPassword: "test12312" } ) }',
+    });
+    expect(updatePasswordRes.body.singleResult.errors).toBeDefined();
+  });
 });

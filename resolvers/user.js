@@ -88,7 +88,7 @@ const userResolver = {
     },
     // Make a user admin
     async makeAdmin(_, args, context) {
-      if (await isAuthenticated(context.user.id) && await isUserAdmin(context.user.id)) {
+      if (await isAuthenticated(context) && await isUserAdmin(context)) {
         const user = await User.findById(args.id);
         if (!user) {
           throw new GraphQLError(`No user with id ${args.id} found`, {
@@ -111,7 +111,7 @@ const userResolver = {
     },
     // Delete a user (only admin can perform this action)
     async deleteUser(_, args, context) {
-      if (await isAuthenticated(context.user.id) && await isUserAdmin(context.user.id)) {
+      if (await isAuthenticated(context) && await isUserAdmin(context)) {
         const user = await User.findById(args.id);
         if (!user) {
           throw new GraphQLError(`No user with id ${args.id} found`, {
@@ -134,7 +134,7 @@ const userResolver = {
     // Update a password for the user
     async updatePassword(_, { updatePasswordInput }, context) {
       // Check if user is authenticated from the context
-      if (await isAuthenticated(context.user.id)) {
+      if (await isAuthenticated(context)) {
         // Check if user exists in the db from the provided email
         const oldUser = await User.findOne({ email: updatePasswordInput.email });
         // Check if the provided old password is correct
