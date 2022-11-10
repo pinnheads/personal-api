@@ -25,7 +25,7 @@ const basicsType = `#graphql
     type Mutation {
         addBasics(basicsInput: BasicsInput): Basics
         updateBasics(basicsInput: BasicsInput): Basics!
-        deleteBasics(id: ID!): Boolean!
+        deleteBasics: Boolean!
     }
 `;
 

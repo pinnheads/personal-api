@@ -1,18 +1,22 @@
 /* eslint-disable no-undef */
 import setupServer from './index';
 import User from '../models/user';
+import Basics from '../models/basics';
 
 describe('Users', () => {
   let apolloTestServer;
 
   beforeAll(async () => {
     apolloTestServer = await setupServer();
+    await Basics.deleteMany();
     await User.deleteMany();
   });
 
   afterAll(async () => {
     await User.deleteMany();
+    await Basics.deleteMany();
     await apolloTestServer.db.close();
+    await apolloTestServer.server.stop();
   });
 
   test('[User]: User Signup - Happy Path', async () => {
@@ -224,7 +228,6 @@ describe('Users', () => {
       },
     });
     expect(getUser.body.singleResult.errors).toBeUndefined();
-    expect(getUser.body.singleResult.errors).toBeUndefined();
     const userData = getUser.body.singleResult.data.user;
     expect(userData).toHaveProperty('id');
     expect(userData).toHaveProperty('username');
@@ -244,7 +247,7 @@ describe('Users', () => {
 
   test('[User]: Get User - Unauthenticated user', async () => {
     // Create a new user
-    const response = await apolloTestServer.server.executeOperation({
+    await apolloTestServer.server.executeOperation({
       query: 'mutation Mutation { registerUser(registerInput: { email: "testuser1@gmail.com"  username: "pinnheads" password: "test123123" }) { id username email password token isAdmin basics } }',
     });
     const getUser = await apolloTestServer.server.executeOperation({

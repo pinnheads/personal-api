@@ -42,5 +42,4 @@ async function setupServer() {
   });
   return { server, db };
 }
-
 export default setupServer;

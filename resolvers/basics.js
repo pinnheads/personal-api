@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import { GraphQLError } from 'graphql';
 // import Url from '../models/url.js';
 import { isAuthenticated } from '../middleware/user.js';
@@ -16,7 +17,6 @@ const basicsResolver = {
         return null;
         // return Basics.populate(result, { path: 'socials' });
       }
-      return null;
     },
   },
   Mutation: {
@@ -44,7 +44,6 @@ const basicsResolver = {
         await user.save();
         return result;
       }
-      return null;
     },
     async updateBasics(_, { basicsInput }, context) {
       if (await (isAuthenticated(context))) {
@@ -62,19 +61,13 @@ const basicsResolver = {
         }
         return null;
       }
-      return null;
     },
     async deleteBasics(_, args, context) {
       if (await isAuthenticated(context)) {
-        const basics = await Basics.findById(args.id);
-        if (!basics) {
-          throw new GraphQLError(`Could not find basics data with id: ${args.id}`, {
-            extensions: {
-              code: 'INVALID_INPUT',
-              http: { status: 404 },
-            },
-          });
+        if (!context.user.basics) {
+          throw new GraphQLError('Could not find basics data');
         }
+        const basics = await Basics.findById(context.user.basics);
         await Basics.findByIdAndDelete(basics.id);
         const user = await User.findById(
           context.user.id,
@@ -83,7 +76,6 @@ const basicsResolver = {
         await user.save();
         return true;
       }
-      return null;
     },
   },
 };
