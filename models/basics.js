@@ -4,17 +4,17 @@ import mongoose, { Schema } from 'mongoose';
 import Url from './url.js';
 
 const basicsSchema = new Schema({
-  firstName: String,
-  lastName: String,
-  currentRole: String,
-  phone: String,
-  summary: String,
-  location: String,
-  socials: [{
-    type: mongoose.ObjectId,
-    ref: 'Url',
-    default: null,
-  }],
+  firstName: { type: String, default: null },
+  lastName: { type: String, default: null },
+  currentRole: { type: String, default: null },
+  phone: { type: String, default: null },
+  summary: { type: String, default: null },
+  location: { type: String, default: null },
+  // socials: [{
+  //   type: mongoose.ObjectId,
+  //   ref: 'Url',
+  //   default: null,
+  // }],
 });
 
 basicsSchema.path('phone').validate((phone) => {

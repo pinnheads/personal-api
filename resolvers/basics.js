@@ -1,40 +1,83 @@
 import { GraphQLError } from 'graphql';
-import Url from '../models/url.js';
+// import Url from '../models/url.js';
+import { isAuthenticated } from '../middleware/user.js';
 import User from '../models/user.js';
 import Basics from '../models/basics.js';
 
 const basicsResolver = {
   Query: {
-    async basics(parent, args) {
-      const result = await Basics.findById(args.id);
-      return Basics.populate(result, { path: 'socials' });
+    async basics(_, args, context) {
+      if (isAuthenticated(context)) {
+        const user = await User.findById(context.user.id);
+        if (user.basics) {
+          const populatedUser = await User.populate(user, { path: 'basics' });
+          return populatedUser.basics;
+        }
+        return null;
+        // return Basics.populate(result, { path: 'socials' });
+      }
+      return null;
     },
   },
   Mutation: {
-    async addBasics(parent, args, context) {
-      if (!context.user) {
-        throw new GraphQLError('User is not authenticated', {
-          extensions: {
-            code: 'UNAUTHENTICATED',
-            http: { status: 401 },
-          },
+    async addBasics(_, { basicsInput }, context) {
+      if (await isAuthenticated(context)) {
+        const newUserBasics = new Basics({
+          firstName: basicsInput.firstName,
+          lastName: basicsInput.lastName,
+          currentRole: basicsInput.currentRole,
+          phone: basicsInput.phone,
+          summary: basicsInput.summary,
+          location: basicsInput.location,
         });
+        const result = await newUserBasics.save();
+        const user = await User.findById(
+          context.user.id,
+        );
+        user.basics = newUserBasics;
+        await user.save();
+        return result;
       }
-      const newUserBasics = new Basics({
-        firstName: args.firstName,
-        lastName: args.lastName,
-        currentRole: args.currentRole,
-        phone: args.phone,
-        summary: args.summary,
-        location: args.location,
-      });
-      const result = await newUserBasics.save();
-      const user = await User.findById(
-        context.user.id,
-      );
-      user.basics = newUserBasics;
-      await user.save();
-      return result;
+      return null;
+    },
+    async updateBasics(_, { basicsInput }, context) {
+      if (await (isAuthenticated(context))) {
+        const user = await User.findById(context.user.id);
+        const basics = await Basics.findById(user.basics);
+        if (basics) {
+          basics.firstName = basicsInput.firstName;
+          basics.lastName = basicsInput.lastName;
+          basics.currentRole = basicsInput.currentRole;
+          basics.phone = basicsInput.phone;
+          basics.summary = basicsInput.summary;
+          basics.location = basicsInput.location;
+          await basics.save();
+          return basics;
+        }
+        return null;
+      }
+      return null;
+    },
+    async deleteBasics(_, args, context) {
+      if (await isAuthenticated(context)) {
+        const basics = await Basics.findById(args.id);
+        if (!basics) {
+          throw new GraphQLError(`Could not find basics data with id: ${args.id}`, {
+            extensions: {
+              code: 'INVALID_INPUT',
+              http: { status: 404 },
+            },
+          });
+        }
+        await Basics.findByIdAndDelete(basics.id);
+        const user = await User.findById(
+          context.user.id,
+        );
+        user.basics = null;
+        await user.save();
+        return true;
+      }
+      return null;
     },
   },
 };

@@ -5,8 +5,9 @@ const userType = `#graphql
         username: String!
         email: String!
         password: String!
-        token: String
+        token: String!
         isAdmin: Boolean!
+        basics: Basics
     }
 
     input RegisterInput {

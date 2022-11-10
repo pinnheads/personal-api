@@ -9,7 +9,7 @@ const userSchema = new Schema({
   password: String,
   token: String,
   isAdmin: { type: Boolean, default: false },
-  // basics: { type: mongoose.ObjectId, ref: 'Basic', default: null },
+  basics: { type: mongoose.ObjectId, ref: 'Basic', default: null },
 });
 
 userSchema.path('email').validate((email) => {

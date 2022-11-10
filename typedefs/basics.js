@@ -1,28 +1,31 @@
 const basicsType = `#graphql
     type Basics {
-        id: ID!
-        firstName: String!
-        lastName: String!
+        id: ID
+        firstName: String
+        lastName: String
         currentRole: String
-        phone: String!
-        summary: String!
-        location: String!
-        socials: [Url]
+        phone: String
+        summary: String
+        location: String
     }
 
     type Query {
-        basics(id: ID!): Basics!
+        basics: Basics
+    }
+
+    input BasicsInput {
+        firstName: String
+        lastName: String
+        currentRole: String
+        phone: String
+        summary: String
+        location: String
     }
 
     type Mutation {
-        addBasics(  
-            firstName: String,
-            lastName: String,
-            currentRole: String,
-            phone: String,
-            summary: String,
-            location: String
-        ): Basics
+        addBasics(basicsInput: BasicsInput): Basics
+        updateBasics(basicsInput: BasicsInput): Basics!
+        deleteBasics(id: ID!): Boolean!
     }
 `;
 
