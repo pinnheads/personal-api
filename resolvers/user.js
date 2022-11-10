@@ -10,9 +10,15 @@ import { isUserAdmin, isAuthenticated } from '../middleware/user.js';
 const userResolver = {
   Query: {
     async user(_, args, context) {
-      const result = await User.findById(context.user.id);
-      return result;
-      // return User.populate(result, { path: 'basics', populate: { path: 'socials' } });
+      if (isAuthenticated(context)) {
+        const result = await User.findById(context.user.id);
+        if (result.basics) {
+          return User.populate(result, { path: 'basics' });
+        }
+        return result;
+      }
+      return null;
+      // ! return User.populate(result, { path: 'basics', populate: { path: 'socials' } });
     },
   },
   Mutation: {
@@ -154,6 +160,7 @@ const userResolver = {
           },
         );
       }
+      return null;
     },
   },
 };
