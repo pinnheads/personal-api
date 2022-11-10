@@ -190,6 +190,69 @@ describe('Users', () => {
     expect(getUser.body.singleResult.errors).toBeUndefined();
   });
 
+  test('[User]: Get User - Return Basics details also', async () => {
+    // Create a new user
+    const response = await apolloTestServer.server.executeOperation({
+      query: 'mutation Mutation { registerUser(registerInput: { email: "basicsuser@gmail.com"  username: "pinnheads" password: "test123123" }) { id username email password token isAdmin basics { currentRole firstName id lastName location phone summary } } }',
+    });
+    expect(response.body.singleResult.errors).toBeUndefined();
+    const data = response.body.singleResult.data.registerUser;
+    expect(data).toHaveProperty('id');
+    expect(data).toHaveProperty('username');
+    expect(data).toHaveProperty('email');
+    expect(data).toHaveProperty('password');
+    expect(data).toHaveProperty('token');
+    expect(data).toHaveProperty('isAdmin');
+    expect(data).toHaveProperty('basics');
+    expect(data.basics).toBeNull();
+    // Get the new user
+    const user = await User.findById(response.body.singleResult.data.registerUser.id);
+    await apolloTestServer.server.executeOperation({
+      query: 'mutation Mutation { addBasics( basicsInput: { currentRole: "test" firstName: "test" lastName: "test" location: null phone: "8867834648" summary: null }) { currentRole firstName id lastName location phone summary} }',
+    }, {
+      // Add user to context
+      contextValue: {
+        user,
+      },
+    });
+    const getUser = await apolloTestServer.server.executeOperation({
+      query: 'query Query { user { email id isAdmin password token username  basics { currentRole firstName id lastName location phone summary } } }',
+    }, {
+      // Add admin user to context
+      contextValue: {
+        user,
+      },
+    });
+    expect(getUser.body.singleResult.errors).toBeUndefined();
+    expect(getUser.body.singleResult.errors).toBeUndefined();
+    const userData = getUser.body.singleResult.data.user;
+    expect(userData).toHaveProperty('id');
+    expect(userData).toHaveProperty('username');
+    expect(userData).toHaveProperty('email');
+    expect(userData).toHaveProperty('password');
+    expect(userData).toHaveProperty('token');
+    expect(userData).toHaveProperty('isAdmin');
+    expect(userData).toHaveProperty('basics');
+    expect(userData.basics).toHaveProperty('currentRole');
+    expect(userData.basics).toHaveProperty('firstName');
+    expect(userData.basics).toHaveProperty('lastName');
+    expect(userData.basics).toHaveProperty('id');
+    expect(userData.basics).toHaveProperty('location');
+    expect(userData.basics).toHaveProperty('phone');
+    expect(userData.basics).toHaveProperty('summary');
+  });
+
+  test('[User]: Get User - Unauthenticated user', async () => {
+    // Create a new user
+    const response = await apolloTestServer.server.executeOperation({
+      query: 'mutation Mutation { registerUser(registerInput: { email: "testuser1@gmail.com"  username: "pinnheads" password: "test123123" }) { id username email password token isAdmin basics } }',
+    });
+    const getUser = await apolloTestServer.server.executeOperation({
+      query: 'query Query { user { email id isAdmin password token username basics } }',
+    });
+    expect(getUser.body.singleResult.errors).toBeDefined();
+  });
+
   test('[User]: Delete User - Happy Path', async () => {
     // Create a new user
     const response = await apolloTestServer.server.executeOperation({

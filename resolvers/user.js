@@ -17,7 +17,6 @@ const userResolver = {
         }
         return result;
       }
-      return null;
       // ! return User.populate(result, { path: 'basics', populate: { path: 'socials' } });
     },
   },
@@ -160,7 +159,6 @@ const userResolver = {
           },
         );
       }
-      return null;
     },
   },
 };

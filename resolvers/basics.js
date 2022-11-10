@@ -22,6 +22,15 @@ const basicsResolver = {
   Mutation: {
     async addBasics(_, { basicsInput }, context) {
       if (await isAuthenticated(context)) {
+        const user = await User.findById(context.user.id);
+        if (user.basics) {
+          throw new GraphQLError(`This users basics data already exists with id ${user.basics}`, {
+            extensions: {
+              code: 'ALREADY_EXISTS',
+              http: { status: 409 },
+            },
+          });
+        }
         const newUserBasics = new Basics({
           firstName: basicsInput.firstName,
           lastName: basicsInput.lastName,
@@ -31,9 +40,6 @@ const basicsResolver = {
           location: basicsInput.location,
         });
         const result = await newUserBasics.save();
-        const user = await User.findById(
-          context.user.id,
-        );
         user.basics = newUserBasics;
         await user.save();
         return result;
