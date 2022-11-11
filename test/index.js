@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable import/first */
 import _, { sumBy } from 'lodash';
 import { ApolloServer } from '@apollo/server';

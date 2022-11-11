@@ -1,16 +1,24 @@
 const urlType = `#graphql
     type Url {
-        id: ID!
+        id: ID
         label: String
-        link: String!
+        link: String
+        userId: ID
     }
 
     type Query {
         Url(id: ID!): Url!
     }
 
+    input UrlInput {
+        label: String
+        link: String
+    }
+
     type Mutation {
-        addUrl(label: String, link: String): Url!
+        addUrl(urlInput: UrlInput): Url!
+        updateUrl(id: ID!, label: String!, link: String!): Url!
+        deleteUrl(id: ID!): Boolean!
     }
 `;
 

@@ -1,9 +1,13 @@
 /* eslint-disable new-cap */
+/* eslint-disable import/no-cycle */
+/* eslint-disable no-unused-vars */
+
 import mongoose from 'mongoose';
 
 const urlSchema = new mongoose.Schema({
   label: String,
   link: String,
+  userId: mongoose.ObjectId,
 });
 
 urlSchema.path('link').validate((url) => {
