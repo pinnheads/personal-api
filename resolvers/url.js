@@ -10,20 +10,13 @@ const urlResolver = {
     async Url(_, args, context) {
       if (isAuthenticated(context)) {
         const result = await Url.findById(args.id);
-        if (result.userId.toString() === context.user.id) {
-          if (result) {
-            return result;
-          }
-          throw new GraphQLError(`URL with id ${args.id} not found`, {
-            extensions: {
-              code: 'INVALID_INPUT',
-            },
-          });
+        if (result && result.userId.toString() === context.user.id) {
+          return result;
         }
-        throw new GraphQLError('You\'re not permitted to retrieve this url', {
+        throw new GraphQLError(`URL with id ${args.id} not found for the current user`, {
           extensions: {
-            code: 'FORBIDDEN',
-            http: { status: 403 },
+            code: 'INVALID_INPUT',
+            http: { status: 404 },
           },
         });
       }
@@ -41,11 +34,38 @@ const urlResolver = {
         return result;
       }
     },
-    // async updateUrl(_, args, context) {
-    //   if (isAuthenticated(context)) {
-    //     const oldLink = await Url.findById(args.id);
-    //   }
-    // },
+    async updateUrl(_, { id, label, link }, context) {
+      if (isAuthenticated(context)) {
+        const oldLink = await Url.findById(id);
+        if (oldLink && oldLink.userId.toString() === context.user.id) {
+          oldLink.label = label;
+          oldLink.link = link;
+          const result = await oldLink.save();
+          return result;
+        }
+        throw new GraphQLError(`URL with id ${id} not found for the current user`, {
+          extensions: {
+            code: 'INVALID_INPUT',
+            http: { status: 404 },
+          },
+        });
+      }
+    },
+    async deleteUrl(_, { id }, context) {
+      if (isAuthenticated(context)) {
+        const oldLink = await Url.findById(id);
+        if (oldLink && oldLink.userId.toString() === context.user.id) {
+          await Url.findByIdAndDelete(oldLink.id);
+          return true;
+        }
+        throw new GraphQLError(`URL with id ${id} not found for the current user`, {
+          extensions: {
+            code: 'INVALID_INPUT',
+            http: { status: 404 },
+          },
+        });
+      }
+    },
   },
 };
 
