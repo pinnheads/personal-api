@@ -10,11 +10,11 @@ const basicsSchema = new Schema({
   phone: { type: String, default: null },
   summary: { type: String, default: null },
   location: { type: String, default: null },
-  // socials: [{
-  //   type: mongoose.ObjectId,
-  //   ref: 'Url',
-  //   default: null,
-  // }],
+  socials: [{
+    type: mongoose.ObjectId,
+    ref: 'Url',
+    default: null,
+  }],
 });
 
 basicsSchema.path('phone').validate((phone) => {

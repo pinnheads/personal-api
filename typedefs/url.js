@@ -15,9 +15,15 @@ const urlType = `#graphql
         link: String
     }
 
+    input UrlUpdateInput {
+        id: ID!
+        label: String!
+        link: String!
+    }
+
     type Mutation {
         addUrl(urlInput: UrlInput): Url!
-        updateUrl(id: ID!, label: String!, link: String!): Url!
+        updateUrl(urlUpdateInput: UrlUpdateInput): Url!
         deleteUrl(id: ID!): Boolean!
     }
 `;

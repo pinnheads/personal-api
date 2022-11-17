@@ -1,8 +1,6 @@
 /* eslint-disable consistent-return */
 import { GraphQLError } from 'graphql';
 import Url from '../models/url.js';
-import User from '../models/user.js';
-import Basics from '../models/basics.js';
 import { isAuthenticated } from '../middleware/user.js';
 
 const urlResolver = {
@@ -34,16 +32,16 @@ const urlResolver = {
         return result;
       }
     },
-    async updateUrl(_, { id, label, link }, context) {
+    async updateUrl(_, { urlUpdateInput }, context) {
       if (isAuthenticated(context)) {
-        const oldLink = await Url.findById(id);
+        const oldLink = await Url.findById(urlUpdateInput.id);
         if (oldLink && oldLink.userId.toString() === context.user.id) {
-          oldLink.label = label;
-          oldLink.link = link;
+          oldLink.label = urlUpdateInput.label;
+          oldLink.link = urlUpdateInput.link;
           const result = await oldLink.save();
           return result;
         }
-        throw new GraphQLError(`URL with id ${id} not found for the current user`, {
+        throw new GraphQLError(`URL with id ${urlUpdateInput.id} not found for the current user`, {
           extensions: {
             code: 'INVALID_INPUT',
             http: { status: 404 },

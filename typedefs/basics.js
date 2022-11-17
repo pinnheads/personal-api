@@ -7,6 +7,7 @@ const basicsType = `#graphql
         phone: String
         summary: String
         location: String
+        socials: [Url]
     }
 
     type Query {
@@ -20,13 +21,24 @@ const basicsType = `#graphql
         phone: String
         summary: String
         location: String
+        socials: [UrlInput]
     }
 
+    input BasicsUpdateInput {
+        firstName: String
+        lastName: String
+        currentRole: String
+        phone: String
+        summary: String
+        location: String
+        socials: [UrlUpdateInput]
+    }
+    
     type Mutation {
         addBasics(basicsInput: BasicsInput): Basics
-        updateBasics(basicsInput: BasicsInput): Basics!
+        updateBasics(basicsUpdateInput: BasicsUpdateInput): Basics!
         deleteBasics: Boolean!
     }
-`;
+    `;
 
 export default basicsType;

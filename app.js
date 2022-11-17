@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable import/first */
 import _ from 'lodash';
+import morgan from 'morgan';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
@@ -49,6 +50,7 @@ async function startApolloServer() {
   app.use(
     '/',
     cors(),
+    morgan('common'),
     bodyParser.json(),
     // expressMiddleware accepts the same arguments:
     // an Apollo Server instance and optional configuration options
