@@ -7,7 +7,8 @@
   "scripts": {
     "compile": "tsc",
     "start": "npm run compile && nodemon ./dist/index.js --watch src index.ts",
-    "test": "jest --detectOpenHandles --forceExit --runInBand"
+    "test": "jest --detectOpenHandles --forceExit --runInBand",
+    "type": "nodemon --watch './**/*.ts' --exec 'node --experimental-specifier-resolution=node --loader ts-node/esm' index.ts"
   },
   "author": "Utsav",
   "license": "ISC",
@@ -38,8 +39,10 @@
     "@types/jsonwebtoken": "^8.5.9",
     "@types/lodash": "^4.14.189",
     "@types/morgan": "^1.9.3",
+    "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
     "graphql": "^16.6.0",
+    "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0"
   }

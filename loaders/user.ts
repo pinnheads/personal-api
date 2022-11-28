@@ -35,6 +35,35 @@ export class User {
     });
     return newUser;
   }
+
+  async userExists(email: string): Promise<boolean> {
+    const oldUser = await this.prisma.user.findUnique({
+      where: {
+        email: email,
+      }
+    })
+    if (oldUser == null) return false;
+    return true;
+
+  }
+
+  async isUserAdmin(token: string): Promise<boolean> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        token: token,
+      },
+    });
+    if (user) return user.isAdmin;
+  }
+
+  // async updateUser({email, username, token}): Promise<IUser> {
+  //   if(this.userExists(token)) {
+  //     return this.prisma.user.update({data: {
+  //       username: username,
+  //       email: email
+  //     }})
+  //   }
+  // }
 }
 
 // export const generateUserModel = (userId: string, prisma: PrismaClient) => ({
