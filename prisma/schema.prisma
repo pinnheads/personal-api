@@ -15,3 +15,16 @@ model User {
     password String
     isAdmin  Boolean @default(false)
 }
+
+model Basics {
+    id                String @id @default(auto()) @map("_id") @db.ObjectId
+    firstName         String
+    middleName        String
+    lastName          String
+    summary           String
+    location          String
+    label             String
+    url               String
+    yearsOfExperience Int
+    blog              String
+}
