@@ -40,11 +40,10 @@ export class User {
     const oldUser = await this.prisma.user.findUnique({
       where: {
         email: email,
-      }
-    })
+      },
+    });
     if (oldUser == null) return false;
     return true;
-
   }
 
   async isUserAdmin(token: string): Promise<boolean> {
@@ -56,50 +55,59 @@ export class User {
     if (user) return user.isAdmin;
   }
 
-  // async updateUser({email, username, token}): Promise<IUser> {
-  //   if(this.userExists(token)) {
-  //     return this.prisma.user.update({data: {
-  //       username: username,
-  //       email: email
-  //     }})
-  //   }
-  // }
-}
+  async getUser(token: string): Promise<IUser> {
+    const user = await this.prisma.user.findFirstOrThrow({
+      where: {
+        token: token,
+      },
+    });
+    return user;
+  }
 
-// export const generateUserModel = (userId: string, prisma: PrismaClient) => ({
-//   getById: async () => {
-//     if (!userId) return null;
-//     const result = await prisma.user.findFirst({
-//       where: {
-//         id: userId,
-//       },
-//     });
-//     return result;
-//   },
-//   getAll: async () => {
-//     const user = await prisma.user.findFirst({
-//       where: {
-//         id: userId,
-//       },
-//     });
-//     if (!user || user.isAdmin == false) return null;
-//     const allUsers = await prisma.user.findMany();
-//     return allUsers;
-//   },
-//   createNewUser: async (
-//     username: string,
-//     email: string,
-//     password: string,
-//     token: string
-//   ) => {
-//     const newUser = await prisma.user.create({
-//       data: {
-//         email,
-//         password,
-//         token,
-//         username,
-//       },
-//     });
-//     return newUser;
-//   },
-// });
+  private async checkDuplicate(email: string): Promise<boolean> {
+    try {
+      await this.prisma.user.findUniqueOrThrow({
+        where: {
+          email: email,
+        },
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  async updateUser(
+    email: string,
+    username: string,
+    token: string
+  ): Promise<IUser> {
+    const user = await this.getUser(token);
+    if (!(await this.checkDuplicate(email))) {
+      return this.prisma.user.update({
+        where: {
+          email: user.email,
+        },
+        data: {
+          username: username,
+          email: email,
+        },
+      });
+    } else {
+      throw new Error(`User with email ${email} already exists!!`);
+    }
+  }
+
+  async deleteUser(email: string): Promise<boolean> {
+    try {
+      await this.prisma.user.delete({
+        where: {
+          email: email,
+        },
+      });
+      return true;
+    } catch (error) {
+      throw new Error(`User with email ${email} not found`);
+    }
+  }
+}

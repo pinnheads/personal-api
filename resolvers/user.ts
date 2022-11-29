@@ -54,6 +54,26 @@ const userResolver = {
       // Return the result
       return newUser;
     },
+    async updateUserDetails(_, { updateDetails }, { token, models }: Context) {
+      return await models.User.updateUser(
+        updateDetails.email,
+        updateDetails.username,
+        token
+      );
+    },
+    async deleteUser(_, { email }, { token, models }: Context) {
+      if (models.User.isUserAdmin(token)) {
+        return await models.User.deleteUser(email);
+      }
+      throw new GraphQLError('Not allowed to take this action', {
+        extensions: {
+          code: 'FORBIDDEN',
+          http: {
+            status: 403,
+          },
+        },
+      });
+    },
   },
 };
 

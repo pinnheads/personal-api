@@ -14,8 +14,15 @@ const userType = `#graphql
         password: String
     }
 
+    input UpdateDetailsInput {
+        email: String
+        username: String
+    }
+
     type Mutation {
         registerUser(registerInput: RegisterInput): User!
+        updateUserDetails(updateDetails: UpdateDetailsInput): User!
+        deleteUser(email: String): Boolean!
     }
 
     type Query {

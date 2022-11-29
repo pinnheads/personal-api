@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import { GraphQLError } from 'graphql';
 import jwt from 'jsonwebtoken';
 
 export const encryptPassword = async (password: string): Promise<string> => {
@@ -26,6 +27,7 @@ export const generateToken = async (userEmail: string): Promise<string> => {
 };
 
 export const verifyToken = async (token: string) => {
-  const result = jwt.verify(token, process.env.SECRET_KEY);
-  return result;
+  const result = jwt.decode(token, { complete: true });
+  if (!result) throw new GraphQLError('Invalid Token');
+  return result.payload;
 };
