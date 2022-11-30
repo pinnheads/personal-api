@@ -10,13 +10,10 @@ interface IUser {
 }
 
 export class User {
-  private userToken: string;
   private prisma: PrismaClient;
 
-  constructor(options: { prisma: PrismaClient; token?: string }) {
-    this.userToken = options.token;
+  constructor(options: { prisma: PrismaClient }) {
     this.prisma = options.prisma;
-    console.log(this.userToken);
   }
 
   async createUser(
@@ -64,6 +61,11 @@ export class User {
     return user;
   }
 
+  async getAllUsers(): Promise<IUser[]> {
+    const users = await this.prisma.user.findMany();
+    return users;
+  }
+
   private async checkDuplicate(email: string): Promise<boolean> {
     try {
       await this.prisma.user.findUniqueOrThrow({
@@ -107,7 +109,7 @@ export class User {
       });
       return true;
     } catch (error) {
-      throw new Error(`User with email ${email} not found`);
+      throw new Error(`User with email ${email}`);
     }
   }
 }

@@ -51,7 +51,7 @@ async function startApolloServer() {
         return {
           token: token,
           models: {
-            User: new User({ prisma: prisma, token: token }),
+            User: new User({ prisma: prisma }),
           },
         };
       },
