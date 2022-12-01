@@ -17,7 +17,6 @@ const userResolver = {
         }
       );
     },
-
     async allUsers(_, args, { token, models }: Context) {
       if (await models.User.isUserAdmin(token)) return await models.User.getAllUsers()
       throw new GraphQLError(
