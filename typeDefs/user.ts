@@ -6,6 +6,7 @@ const userType = `#graphql
         password: String!
         token: String!
         isAdmin: Boolean!
+        basics: Basics
     }
 
     type ReturnUser {
@@ -13,6 +14,7 @@ const userType = `#graphql
         username: String!
         email: String!
         token: String!
+        basics: Basics
     }
 
     type AllUsers {

@@ -1,6 +1,7 @@
 const basicsType = `#graphQl
   type Basics {
     id: ID
+    userId: String
     firstName: String
     middleName: String
     lastName: String
@@ -33,6 +34,6 @@ const basicsType = `#graphQl
     updateBasics(id: ID, basicsInput: BasicsInput): Basics!
     deleteBasics(id: ID): Boolean!
   }
-`
+`;
 
 export default basicsType;

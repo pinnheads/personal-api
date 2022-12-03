@@ -31,7 +31,19 @@ const basicResolver = {
   Mutation: {
     async addBasics(_, { basicsInput }, { token, models }: Context) {
       if (token) {
-        const newBasicsData = await models.Basics.createBasics(basicsInput);
+        const user = await models.User.getUser(token);
+        if (user.basics) {
+          throw new GraphQLError(
+            `Basics data already exsits for this user with id ${user.basics.id}`,
+            {
+              extensions: { code: 'ALREADY_EXSITS' },
+            }
+          );
+        }
+        const newBasicsData = await models.Basics.createBasics(
+          basicsInput,
+          user.id
+        );
         if (newBasicsData) return newBasicsData;
         throw new GraphQLError('Cannot create new entry at the moment!!', {
           extensions: {

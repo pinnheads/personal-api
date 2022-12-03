@@ -1,12 +1,14 @@
 import { PrismaClient } from '@prisma/client';
+import { IBasics } from './basics.js';
 
-interface IUser {
+export interface IUser {
   id?: string;
   username?: string;
   email: string;
   password: string;
   token: string;
   isAdmin: boolean;
+  basics?: IBasics;
 }
 
 export class User {
@@ -28,6 +30,9 @@ export class User {
         email: email,
         password: password,
         token: token,
+      },
+      include: {
+        basics: true,
       },
     });
     return newUser;
@@ -56,6 +61,9 @@ export class User {
     const user = await this.prisma.user.findFirstOrThrow({
       where: {
         token: token,
+      },
+      include: {
+        basics: true,
       },
     });
     return user;
@@ -94,11 +102,33 @@ export class User {
           username: username,
           email: email,
         },
+        include: {
+          basics: true,
+        },
       });
     } else {
       throw new Error(`User with email ${email} already exists!!`);
     }
   }
+
+  // async updateUserBasics(token: string, basics?: IBasics): Promise<IUser> {
+  //   const user = await this.getUser(token);
+  //   return this.prisma.user.update({
+  //     where: {
+  //       email: user.email,
+  //     },
+  //     data: {
+  //       basics: {
+  //         connect: {
+  //           id: basics.id,
+  //         },
+  //       },
+  //     },
+  //     include: {
+  //       basics: true,
+  //     },
+  //   });
+  // }
 
   async deleteUser(email: string): Promise<boolean> {
     try {
