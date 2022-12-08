@@ -5,18 +5,32 @@ import { Context } from '../context.js';
 
 const userResolver = {
   Query: {
-    // async user(_, args, { userId, models }: Context) {
-    //   if (userId) return await models.User.getById();
-    //   throw new GraphQLError(
-    //     'Please provide a authentication token in the header!!',
-    //     {
-    //       extensions: {
-    //         code: 'FORBIDDEN',
-    //         http: { status: 403 },
-    //       },
-    //     }
-    //   );
-    // },
+    async user(_, args, { token, models }: Context) {
+      if (token) return await models.User.getUser(token);
+      throw new GraphQLError(
+        'Please provide a authentication token in the header!!',
+        {
+          extensions: {
+            code: 'FORBIDDEN',
+            http: { status: 403 },
+          },
+        }
+      );
+    },
+    async allUsers(_, args, { token, models }: Context) {
+      if (await models.User.isUserAdmin(token)) return await models.User.getAllUsers()
+      throw new GraphQLError(
+        'You\'re not authorized to do this! Only Admins can access this',
+        {
+          extensions: {
+            code: 'FORBIDDEN',
+            http: {
+              status: 403
+            }
+          }
+        }
+      )
+    }
   },
   Mutation: {
     async registerUser(_, { registerInput }, { token, models }: Context) {

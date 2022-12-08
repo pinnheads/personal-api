@@ -6,6 +6,21 @@ const userType = `#graphql
         password: String!
         token: String!
         isAdmin: Boolean!
+        basics: Basics
+    }
+
+    type ReturnUser {
+        id: ID!
+        username: String!
+        email: String!
+        token: String!
+        basics: Basics
+    }
+
+    type AllUsers {
+        id: ID!
+        username: String!
+        email: String!
     }
 
     input RegisterInput {
@@ -26,7 +41,8 @@ const userType = `#graphql
     }
 
     type Query {
-        user: User
+        user: ReturnUser!
+        allUsers: [AllUsers]!
     }
 `;
 

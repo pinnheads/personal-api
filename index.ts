@@ -14,6 +14,7 @@ import { Context } from './context.js';
 import { User } from './loaders/user.js';
 import { resolvers } from './resolvers/index.js';
 import { typeDefs } from './typeDefs/index.js';
+import { Basics } from './loaders/basics.js';
 // import getUser from './middleware/auth';
 
 async function startApolloServer() {
@@ -51,7 +52,8 @@ async function startApolloServer() {
         return {
           token: token,
           models: {
-            User: new User({ prisma: prisma, token: token }),
+            User: new User({ prisma: prisma }),
+            Basics: new Basics({ prisma: prisma, token: token }),
           },
         };
       },

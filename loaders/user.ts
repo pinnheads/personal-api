@@ -1,22 +1,21 @@
 import { PrismaClient } from '@prisma/client';
+import { IBasics } from './basics.js';
 
-interface IUser {
+export interface IUser {
   id?: string;
   username?: string;
   email: string;
   password: string;
   token: string;
   isAdmin: boolean;
+  basics?: IBasics;
 }
 
 export class User {
-  private userToken: string;
   private prisma: PrismaClient;
 
-  constructor(options: { prisma: PrismaClient; token?: string }) {
-    this.userToken = options.token;
+  constructor(options: { prisma: PrismaClient }) {
     this.prisma = options.prisma;
-    console.log(this.userToken);
   }
 
   async createUser(
@@ -31,6 +30,9 @@ export class User {
         email: email,
         password: password,
         token: token,
+      },
+      include: {
+        basics: true,
       },
     });
     return newUser;
@@ -60,8 +62,16 @@ export class User {
       where: {
         token: token,
       },
+      include: {
+        basics: true,
+      },
     });
     return user;
+  }
+
+  async getAllUsers(): Promise<IUser[]> {
+    const users = await this.prisma.user.findMany();
+    return users;
   }
 
   private async checkDuplicate(email: string): Promise<boolean> {
@@ -92,11 +102,33 @@ export class User {
           username: username,
           email: email,
         },
+        include: {
+          basics: true,
+        },
       });
     } else {
       throw new Error(`User with email ${email} already exists!!`);
     }
   }
+
+  // async updateUserBasics(token: string, basics?: IBasics): Promise<IUser> {
+  //   const user = await this.getUser(token);
+  //   return this.prisma.user.update({
+  //     where: {
+  //       email: user.email,
+  //     },
+  //     data: {
+  //       basics: {
+  //         connect: {
+  //           id: basics.id,
+  //         },
+  //       },
+  //     },
+  //     include: {
+  //       basics: true,
+  //     },
+  //   });
+  // }
 
   async deleteUser(email: string): Promise<boolean> {
     try {
@@ -107,7 +139,7 @@ export class User {
       });
       return true;
     } catch (error) {
-      throw new Error(`User with email ${email} not found`);
+      throw new Error(`User with email ${email}`);
     }
   }
 }
