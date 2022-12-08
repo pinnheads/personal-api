@@ -1,5 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-import { IBasics } from './basics.js';
+import { PrismaClient, Basics } from '@prisma/client';
 
 export interface IUser {
   id?: string;
@@ -8,7 +7,7 @@ export interface IUser {
   password: string;
   token: string;
   isAdmin: boolean;
-  basics?: IBasics;
+  basics?: Basics;
 }
 
 export class User {
@@ -32,7 +31,11 @@ export class User {
         token: token,
       },
       include: {
-        basics: true,
+        basics: {
+          include: {
+            profile: true,
+          },
+        },
       },
     });
     return newUser;
@@ -63,7 +66,11 @@ export class User {
         token: token,
       },
       include: {
-        basics: true,
+        basics: {
+          include: {
+            profile: true,
+          },
+        },
       },
     });
     return user;
@@ -103,7 +110,11 @@ export class User {
           email: email,
         },
         include: {
-          basics: true,
+          basics: {
+            include: {
+              profile: true,
+            },
+          },
         },
       });
     } else {

@@ -30,4 +30,13 @@ model Basics {
     url               String
     yearsOfExperience Int
     blog              String
+    profile           Url[]
+}
+
+model Url {
+    id       String @id @default(auto()) @map("_id") @db.ObjectId
+    label    String
+    url      String
+    basics   Basics @relation(fields: [basicsId], references: [id])
+    basicsId String @unique @db.ObjectId
 }

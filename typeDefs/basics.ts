@@ -11,6 +11,7 @@ const basicsType = `#graphQl
     url: String
     yearsOfExperience: Int
     blog: String
+    profile: [UrlOutput]
   }
 
   input BasicsInput {
@@ -23,6 +24,7 @@ const basicsType = `#graphQl
     url: String
     yearsOfExperience: Int
     blog: String
+    profile: [UrlInput]
   }
 
   type Query {

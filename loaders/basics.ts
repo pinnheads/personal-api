@@ -1,20 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Url, Basics } from '@prisma/client';
 import { IUser, User } from './user.js';
 
-export interface IBasics {
-  id?: string;
-  firstName: string;
-  middleName: string;
-  lastName: string;
-  summary: string;
-  location: string;
-  label: string;
-  url: string;
-  yearsOfExperience: number;
-  blog: string;
-}
-
-export class Basics {
+export class BasicsLoaders {
   private prisma: PrismaClient;
   private token: string;
   private user: User;
@@ -26,7 +13,7 @@ export class Basics {
     // user.getUser(token)
   }
 
-  async createBasics(data: IBasics, id: string): Promise<IBasics> {
+  async createBasics(data, id: string): Promise<Basics> {
     const newBasics = await this.prisma.basics.create({
       data: {
         user: {
@@ -43,12 +30,20 @@ export class Basics {
         url: data.url,
         yearsOfExperience: data.yearsOfExperience,
         blog: data.blog,
+        profile: {
+          createMany: {
+            data: data.profile,
+          },
+        },
+      },
+      include: {
+        profile: true,
       },
     });
     return newBasics;
   }
 
-  async updateBasics(data: IBasics, id: string): Promise<IBasics> {
+  async updateBasics(data, id: string): Promise<Basics> {
     const updatedBasics = await this.prisma.basics.update({
       data: {
         firstName: data.firstName,
@@ -64,6 +59,9 @@ export class Basics {
       where: {
         id: id,
       },
+      include: {
+        profile: true,
+      },
     });
     return updatedBasics;
   }
@@ -77,7 +75,7 @@ export class Basics {
     return result ? true : false;
   }
 
-  async getBasics(id: string): Promise<IBasics> {
+  async getBasics(id: string): Promise<Basics> {
     const result = await this.prisma.basics.findUniqueOrThrow({
       where: {
         id: id,
